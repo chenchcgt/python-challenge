@@ -77,7 +77,7 @@ titles = ["Total Months", "Total: $", "Average Change: $", "Greatest Increase in
 values = [months, total_amount, round(avg,2), max_month_desc+'('+str(maximum)+')', min_month_desc+'('+str(minimum)+')']
 result_csv = zip(titles, values)
 
-output_file = os.path.join("budget_final.csv")
+output_file = os.path.join("analysis","budget_final.csv")
 
 with open(output_file, "w") as finalfile:
     writer = csv.writer(finalfile)
