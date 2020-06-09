@@ -2,100 +2,80 @@ import os
 import csv
 
 csvpath = os.path.join("Resources","election_data.csv")
-
+candidate_dict = {}
 vote_count = 0
-khan_count = 0
-correy_count = 0
-li_count = 0
-tooley_count = 0
+maximum = 0
 
 
 with open(csvpath) as csvfile:
     csvreader = csv.reader(csvfile, delimiter=",")
     headers = next(csvreader, None)
 
+# for each row in file, count total number of votes
     for row in csvreader:
-
         vote_count += 1
-        
-        if row[2] == "Khan":
-            khan_count += 1
-        elif row[2] == "Correy":
-            correy_count += 1
-        elif row[2] == "Li":
-            li_count += 1
-        elif row[2] == "O'Tooley":
-            tooley_count += 1
+
+# candidate name on third column
+        candidate_name = row[2]
+
+# use dictionary to count vote per candidate
+        if candidate_name in candidate_dict.keys():
+            candidate_dict[candidate_name] += 1
+
+# when first encountering the candidate, add a vote or will error
+        else:
+            candidate_dict[candidate_name] = 1
+
+print("Election Results")
+print("------------------")
+print(f"Total Votes: {vote_count}")
+print("-------------------")
     
-    khan_perc = (khan_count / vote_count)*100
-    correy_perc = (correy_count / vote_count)*100
-    li_perc = (li_count / vote_count)*100
-    tooley_perc = (tooley_count / vote_count)*100
-
-    def highest(array, n):
-        max = array[0]
-
-        for i in range(1,n):
-            if array[i] > max:
-                max = array[i]
-        return max
+# for each candidate, find the percentage by overall vote count
+for candidate_name in candidate_dict.keys():
+    perc = round((candidate_dict[candidate_name] / vote_count)*100,2)
+    
+    print(f"{candidate_name}: {perc}% ({candidate_dict[candidate_name]})")
+   
+# find the winner's name
+    if candidate_dict[candidate_name] > maximum :
+        maximum = candidate_dict[candidate_name]
+        winner = candidate_name
 
 
-    array = [correy_perc, li_perc, tooley_perc,khan_perc]
-    n = len(array)
-    winner = highest(array,n)
+print("-------------------")
+print(f"Winner: {winner}")
+print("-------------------")
 
-
-
-
-    if winner == khan_perc:
-        winner_person = "Khan"
-    elif winner == correy_perc:
-        winner_person  = "Correy"
-    elif winner == li_perc:
-        winner_person = "Li"
-    else:
-        winner_person = "O'Tooley"
-
-
-print(f"Election Results")
-print(f"--------------------------")
-print(f"Total Votes:  {vote_count}")
-print(f"--------------------------")
-print(f"Khan: {round(khan_perc,2)}% ({khan_count})")
-print(f"Correy: {round(correy_perc,2)}% ({correy_count})")
-print(f"Li: {round(li_perc,2)}% ({li_count})")
-print(f"O'Tooley: {round(tooley_perc,2)}% ({tooley_count})")
-print(f"--------------------------")
-print(f"Winner: {winner_person}")
-print(f"--------------------------")
-
-
-
-#Write to file
-titles = ["Total Votes: ", "Khan: ", "Correy: ", "Li: ", "O'Tooley:", "Winner: " ]
-
-values = [
-vote_count, 
-(str(round(khan_perc,2))+'% ('+ str(khan_count) + ')'),
-(str(round(correy_perc,2))+'% ('+ str(correy_count) + ')'),
-(str(round(li_perc,2))+'% ('+ str(li_count) + ')'),
-(str(round(tooley_perc,2))+'% ('+ str(tooley_count) + ')'),
-winner_person
-]
-
-# , round(khan_perc,2), round(avg,2), max_month_desc+'('+str(maximum)+')', min_month_desc+'('+str(minimum)+')']
-result_csv = zip(titles, values)
-
-output_file = os.path.join("analysis","election_final.csv")
+# write results into a txt file
+output_file = os.path.join("analysis","election_final.txt")
 
 with open(output_file, "w") as finalfile:
-    writer = csv.writer(finalfile)
     
-    writer.writerow(['Election Results'])
-    writer.writerow(['------------------'])
-    # writer.writerow(['Total Votes: ' + str(vote_count))
-    writer.writerows(result_csv)
-    writer.writerow(['------------------'])
+    finalfile.write('Election Results\n')
+    finalfile.write('------------------\n')
+    finalfile.write(f"Total Votes: {vote_count}\n")
+    finalfile.write("-------------------\n")
+        
+        
+    for candidate_name in candidate_dict.keys():
+        perc = round((candidate_dict[candidate_name] / vote_count)*100,2)
+        
+        finalfile.write(f"{candidate_name}: {perc}% ({candidate_dict[candidate_name]})\n")
+   
 
+ 
+    finalfile.write("-------------------\n")
+    finalfile.write(f"Winner: {winner}\n")
+    finalfile.write("-------------------\n")
+
+
+# # prints entire dictionary
+#     print(candidate_dict)
+# # prints keys [all names in list]
+#     print(candidate_dict.keys())
+# # prints votes(values) by name
+#     print(candidate_dict[candidate_name])
+# # prints the name
+#     print(candidate_name)
 
